@@ -35,29 +35,6 @@ A modern EdTech platform built with React that allows students to learn new skil
 - **ESLint** - Code linting and quality assurance
 - **PostCSS** - CSS processing and optimization
 
-## 📁 Project Structure
-
-```
-src/
-├── components/           # Reusable UI components
-│   ├── dashboard/       # Dashboard-specific components
-│   ├── CourseCard.jsx   # Course display component
-│   ├── Navbar.jsx       # Navigation component
-│   ├── ProtectedRoute.jsx # Route protection
-│   ├── RedeemItemCard.jsx # Redeem item component
-│   └── WalletConnect.jsx  # MetaMask integration
-├── context/             # React Context providers
-│   └── AuthContext.jsx  # Authentication state management
-├── data/                # Mock data for development
-│   └── mockData.js      # Sample courses, users, transactions
-├── pages/               # Page components
-│   ├── auth/           # Authentication pages
-│   ├── dashboard/      # Dashboard pages
-│   └── public/         # Public pages
-├── services/           # API and external services
-│   └── api.js          # Axios configuration and API calls
-└── App.jsx             # Main application component
-```
 
 ## 🚀 Getting Started
 

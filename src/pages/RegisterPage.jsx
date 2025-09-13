@@ -67,17 +67,17 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-dark-950 via-dark-900 to-primary-950 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8 bg-gradient-to-b from-dark-800 to-dark-900 p-8 rounded-xl border border-primary-800 shadow-2xl">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
+          <h2 className="mt-6 text-center text-3xl font-bold text-gray-100">
             Create your account
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="mt-2 text-center text-sm text-gray-400">
             Or{' '}
             <Link
               to="/login"
-              className="font-medium text-primary-600 hover:text-primary-500"
+              className="font-medium text-primary-400 hover:text-primary-300 transition-colors duration-200"
             >
               sign in to your existing account
             </Link>
@@ -86,14 +86,14 @@ const RegisterPage = () => {
         
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
+            <div className="bg-red-900/50 border border-red-700 text-red-300 px-4 py-3 rounded-lg backdrop-blur-sm">
               {error}
             </div>
           )}
           
           <div className="space-y-4">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="name" className="block text-sm font-medium text-gray-300">
                 Full Name
               </label>
               <input
@@ -110,7 +110,7 @@ const RegisterPage = () => {
             </div>
             
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="email" className="block text-sm font-medium text-gray-300">
                 Email address
               </label>
               <input
@@ -127,7 +127,7 @@ const RegisterPage = () => {
             </div>
             
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-300">
                 Password
               </label>
               <input
@@ -144,7 +144,7 @@ const RegisterPage = () => {
             </div>
             
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300">
                 Confirm Password
               </label>
               <input
@@ -167,15 +167,15 @@ const RegisterPage = () => {
               name="agree-terms"
               type="checkbox"
               required
-              className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+              className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-600 bg-dark-700 rounded"
             />
-            <label htmlFor="agree-terms" className="ml-2 block text-sm text-gray-900">
+            <label htmlFor="agree-terms" className="ml-2 block text-sm text-gray-300">
               I agree to the{' '}
-              <a href="#" className="text-primary-600 hover:text-primary-500">
+              <a href="#" className="text-primary-400 hover:text-primary-300 transition-colors duration-200">
                 Terms of Service
               </a>{' '}
               and{' '}
-              <a href="#" className="text-primary-600 hover:text-primary-500">
+              <a href="#" className="text-primary-400 hover:text-primary-300 transition-colors duration-200">
                 Privacy Policy
               </a>
             </label>

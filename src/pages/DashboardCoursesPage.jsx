@@ -54,8 +54,8 @@ const DashboardCoursesPage = () => {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">My Courses</h1>
-        <p className="mt-1 text-sm text-gray-600">
+        <h1 className="text-2xl font-bold text-white">My Courses</h1>
+        <p className="mt-1 text-sm text-slate-300">
           Track your progress and continue learning
         </p>
       </div>
@@ -63,16 +63,16 @@ const DashboardCoursesPage = () => {
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="card text-center">
-          <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
-          <div className="text-sm text-gray-600">Total Enrolled</div>
+          <div className="text-2xl font-bold text-white">{stats.total}</div>
+          <div className="text-sm text-slate-400">Total Enrolled</div>
         </div>
         <div className="card text-center">
-          <div className="text-2xl font-bold text-blue-600">{stats.active}</div>
-          <div className="text-sm text-gray-600">In Progress</div>
+          <div className="text-2xl font-bold text-blue-400">{stats.active}</div>
+          <div className="text-sm text-slate-400">In Progress</div>
         </div>
         <div className="card text-center">
-          <div className="text-2xl font-bold text-green-600">{stats.completed}</div>
-          <div className="text-sm text-gray-600">Completed</div>
+          <div className="text-2xl font-bold text-green-400">{stats.completed}</div>
+          <div className="text-sm text-slate-400">Completed</div>
         </div>
       </div>
 

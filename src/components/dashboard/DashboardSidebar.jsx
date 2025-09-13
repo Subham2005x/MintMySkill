@@ -46,9 +46,9 @@ const DashboardSidebar = () => {
 
   return (
     <div className="hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0">
-      <div className="flex flex-col flex-grow bg-white border-r border-gray-200 pt-20 pb-4 overflow-y-auto">
+      <div className="flex flex-col flex-grow bg-gradient-to-b from-slate-800 to-slate-900 border-r border-purple-600 pt-20 pb-4 overflow-y-auto shadow-2xl">
         <div className="flex items-center flex-shrink-0 px-4">
-          <h2 className="text-lg font-semibold text-gray-900">Dashboard</h2>
+          <h2 className="text-lg font-semibold text-white">Dashboard</h2>
         </div>
         <nav className="mt-8 flex-1 px-2 space-y-1">
           {navigation.map((item) => {
@@ -59,11 +59,11 @@ const DashboardSidebar = () => {
                 to={item.href}
                 className={`${
                   isActive
-                    ? 'bg-primary-50 border-r-4 border-primary-600 text-primary-600'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                } group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors duration-200`}
+                    ? 'bg-gradient-to-r from-purple-700 to-purple-600 border-r-4 border-purple-300 text-white shadow-lg'
+                    : 'text-slate-300 hover:bg-slate-700 hover:text-white'
+                } group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-all duration-200`}
               >
-                <span className={`${isActive ? 'text-primary-600' : 'text-gray-400 group-hover:text-gray-500'} mr-3 flex-shrink-0`}>
+                <span className={`${isActive ? 'text-purple-100' : 'text-slate-400 group-hover:text-slate-200'} mr-3 flex-shrink-0`}>
                   {item.icon}
                 </span>
                 {item.name}

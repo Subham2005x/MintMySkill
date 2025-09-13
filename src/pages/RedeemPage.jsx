@@ -161,26 +161,63 @@ const RedeemPage = () => {
       )}
 
       {/* Earn More Tokens CTA */}
-      <div className="bg-gray-50 rounded-xl p-8 text-center">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">
-          Need More Tokens?
-        </h3>
-        <p className="text-gray-600 mb-4">
-          Complete more courses and earn tokens to unlock amazing rewards
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <a
-            href="/courses"
-            className="btn-primary"
-          >
-            Browse Courses
-          </a>
-          <a
-            href="/dashboard/courses"
-            className="btn-outline"
-          >
-            Continue Learning
-          </a>
+      <div className="relative overflow-hidden bg-gradient-to-br from-slate-800 via-slate-700 to-slate-800 rounded-2xl p-8 text-center border border-slate-600/50 shadow-2xl">
+        {/* Background decoration */}
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-900/20 via-transparent to-indigo-900/20"></div>
+        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
+        
+        {/* Content */}
+        <div className="relative z-10">
+          {/* Token icon */}
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-2xl mb-6 shadow-lg">
+            <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 6C14.6 7.9 13.5 9.5 12 10.4C10.5 9.5 9.4 7.9 9 6L3 7V9L9 10V16C9 17.1 9.9 18 11 18H13C14.1 18 15 17.1 15 16V10L21 9Z"/>
+            </svg>
+          </div>
+          
+          <h3 className="text-2xl font-bold bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent mb-3">
+            Need More Tokens?
+          </h3>
+          <p className="text-slate-300 mb-8 text-lg leading-relaxed max-w-md mx-auto">
+            Unlock amazing rewards by completing courses and mastering new skills. Every lesson brings you closer to your goals!
+          </p>
+          
+          {/* Token earning stats */}
+          <div className="grid grid-cols-2 gap-4 mb-8 max-w-sm mx-auto">
+            <div className="bg-slate-900/50 rounded-xl p-4 backdrop-blur-sm border border-slate-600/30">
+              <div className="text-2xl font-bold text-purple-400">10-50</div>
+              <div className="text-xs text-slate-400">Tokens per course</div>
+            </div>
+            <div className="bg-slate-900/50 rounded-xl p-4 backdrop-blur-sm border border-slate-600/30">
+              <div className="text-2xl font-bold text-indigo-400">100+</div>
+              <div className="text-xs text-slate-400">Bonus tokens</div>
+            </div>
+          </div>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <a
+              href="/courses"
+              className="btn-primary btn-lg group relative overflow-hidden"
+            >
+              <span className="relative z-10 flex items-center justify-center">
+                <svg className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+                Browse Courses
+              </span>
+            </a>
+            <a
+              href="/dashboard/courses"
+              className="btn-glass btn-lg group"
+            >
+              <span className="flex items-center justify-center">
+                <svg className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                Continue Learning
+              </span>
+            </a>
+          </div>
         </div>
       </div>
     </div>

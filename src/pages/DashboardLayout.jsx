@@ -4,7 +4,7 @@ import DashboardSidebar from '../components/dashboard/DashboardSidebar';
 
 const DashboardLayout = () => {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-purple-900">
       <DashboardSidebar />
       <div className="lg:pl-64">
         <main className="py-8">
