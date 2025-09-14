@@ -40,14 +40,32 @@ api.interceptors.response.use(
 
 // Authentication APIs
 export const authAPI = {
-  login: async (email, password) => {
-    const response = await api.post('/auth/login', { email, password });
-    return response.data;
+  login: async (email, password, role) => {
+    const response = await api.post('/auth/login', { email, password, role });
+    // For development/mock data
+    return {
+      user: {
+        id: 1,
+        email,
+        name: email.split('@')[0],
+        role: role,
+        tokenBalance: role === 'student' ? 0 : null
+      },
+      token: 'mock-jwt-token'
+    };
   },
   
   register: async (userData) => {
     const response = await api.post('/auth/register', userData);
-    return response.data;
+    // For development/mock data
+    return {
+      user: {
+        id: Math.floor(Math.random() * 1000),
+        ...userData,
+        tokenBalance: userData.role === 'student' ? 0 : null
+      },
+      token: 'mock-jwt-token'
+    };
   },
   
   getProfile: async () => {

@@ -2,6 +2,11 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext();
 
+export const USER_ROLES = {
+  STUDENT: 'student',
+  AUTHOR: 'author'
+};
+
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
