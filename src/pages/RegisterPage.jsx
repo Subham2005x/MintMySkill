@@ -30,30 +30,44 @@ const RegisterPage = () => {
       return;
     }
 
+    // Check password complexity
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/;
+    if (!passwordRegex.test(formData.password)) {
+      setError('Password must contain at least one uppercase letter, one lowercase letter, and one number');
+      return;
+    }
+
+    // Check name length
+    if (formData.name.trim().length < 2) {
+      setError('Name must be at least 2 characters long');
+      return;
+    }
+
     setLoading(true);
 
     try {
-      // For development: mock successful registration
       if (formData.name && formData.email && formData.password) {
-        const mockUser = {
-          id: 1,
+        // Real API call to backend
+        const response = await authAPI.register({
           name: formData.name,
           email: formData.email,
-        };
-        const mockToken = 'mock-jwt-token-12345';
-        
-        login(mockUser, mockToken);
+          password: formData.password
+        });
+        login(response.user, response.token);
         navigate('/dashboard');
       } else {
         setError('Please fill in all fields');
       }
-      
-      // Uncomment this when backend is ready:
-      // const response = await authAPI.register(formData);
-      // login(response.user, response.token);
-      // navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed. Please try again.');
+      console.error('Registration error:', err.response?.data);
+      
+      if (err.response?.data?.errors && err.response.data.errors.length > 0) {
+        // Show specific validation errors
+        const errorMessages = err.response.data.errors.map(error => error.msg).join(', ');
+        setError(errorMessages);
+      } else {
+        setError(err.response?.data?.message || 'Registration failed. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -141,6 +155,9 @@ const RegisterPage = () => {
                 value={formData.password}
                 onChange={handleChange}
               />
+              <p className="mt-1 text-xs text-gray-400">
+                Password must be at least 6 characters with uppercase, lowercase, and number
+              </p>
             </div>
             
             <div>

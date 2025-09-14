@@ -3,16 +3,21 @@ import { useQuery } from '@tanstack/react-query';
 import { coursesAPI } from '../services/api';
 import { mockEnrolledCourses } from '../data/mockData';
 import CourseCard from '../components/CourseCard';
+import { useAuth } from '../context/AuthContext';
 
 const DashboardCoursesPage = () => {
+  const { user } = useAuth();
   const [filter, setFilter] = useState('all'); // 'all', 'active', 'completed'
 
   // Fetch enrolled courses
-  const { data: enrolledCourses = [], isLoading } = useQuery({
+  const { data: enrolledCoursesResponse = {}, isLoading, error } = useQuery({
     queryKey: ['enrolledCourses'],
     queryFn: coursesAPI.getEnrolledCourses,
-    initialData: mockEnrolledCourses,
+    initialData: { data: mockEnrolledCourses },
+    enabled: !!user, // Only run query if user is authenticated
   });
+
+  const enrolledCourses = enrolledCoursesResponse.data || mockEnrolledCourses;
 
   const handleMarkCompleted = async (courseId) => {
     try {
@@ -29,17 +34,17 @@ const DashboardCoursesPage = () => {
   };
 
   // Filter courses based on selected filter
-  const filteredCourses = enrolledCourses.filter(course => {
+  const filteredCourses = Array.isArray(enrolledCourses) ? enrolledCourses.filter(course => {
     if (filter === 'all') return true;
     if (filter === 'active') return course.status === 'active';
     if (filter === 'completed') return course.status === 'completed';
     return true;
-  });
+  }) : [];
 
   const stats = {
-    total: enrolledCourses.length,
-    active: enrolledCourses.filter(c => c.status === 'active').length,
-    completed: enrolledCourses.filter(c => c.status === 'completed').length,
+    total: Array.isArray(enrolledCourses) ? enrolledCourses.length : 0,
+    active: Array.isArray(enrolledCourses) ? enrolledCourses.filter(c => c.status === 'active').length : 0,
+    completed: Array.isArray(enrolledCourses) ? enrolledCourses.filter(c => c.status === 'completed').length : 0,
   };
 
   if (isLoading) {

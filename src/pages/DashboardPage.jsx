@@ -10,16 +10,19 @@ const DashboardPage = () => {
   const { user } = useAuth();
 
   // Fetch enrolled courses
-  const { data: enrolledCourses = [], isLoading } = useQuery({
+  const { data: enrolledCoursesResponse = {}, isLoading } = useQuery({
     queryKey: ['enrolledCourses'],
     queryFn: coursesAPI.getEnrolledCourses,
-    initialData: mockEnrolledCourses,
+    // Remove initialData to show real backend data
+    enabled: !!user, // Only run query if user is authenticated
   });
 
+  const enrolledCourses = enrolledCoursesResponse.data || mockEnrolledCourses;
+
   const stats = {
-    totalCourses: enrolledCourses.length,
-    completedCourses: enrolledCourses.filter(course => course.status === 'completed').length,
-    inProgressCourses: enrolledCourses.filter(course => course.status === 'active').length,
+    totalCourses: Array.isArray(enrolledCourses) ? enrolledCourses.length : 0,
+    completedCourses: Array.isArray(enrolledCourses) ? enrolledCourses.filter(course => course.status === 'completed').length : 0,
+    inProgressCourses: Array.isArray(enrolledCourses) ? enrolledCourses.filter(course => course.status === 'active').length : 0,
     tokensEarned: mockUserData.totalTokensEarned,
   };
 
@@ -144,7 +147,7 @@ const DashboardPage = () => {
             </Link>
           </div>
           
-          {enrolledCourses.filter(course => course.status === 'active').length === 0 ? (
+          {Array.isArray(enrolledCourses) && enrolledCourses.filter(course => course.status === 'active').length === 0 ? (
             <div className="card text-center py-8">
               <svg className="mx-auto h-12 w-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
@@ -159,7 +162,7 @@ const DashboardPage = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              {enrolledCourses
+              {Array.isArray(enrolledCourses) && enrolledCourses
                 .filter(course => course.status === 'active')
                 .slice(0, 2)
                 .map(course => (

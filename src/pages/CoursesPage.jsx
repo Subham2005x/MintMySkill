@@ -10,12 +10,14 @@ const CoursesPage = () => {
   const [selectedCategory, setSelectedCategory] = useState('');
 
   // Use React Query for data fetching
-  const { data: courses = [], isLoading, error } = useQuery({
+  const { data: coursesResponse = {}, isLoading, error } = useQuery({
     queryKey: ['courses'],
     queryFn: coursesAPI.getCourses,
     // Use mock data when backend is not available
-    initialData: mockCourses,
+    initialData: { data: mockCourses },
   });
+
+  const courses = coursesResponse.data || mockCourses;
 
   // Filter courses based on search and filters
   const filteredCourses = courses.filter(course => {

@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 const DashboardSidebar = () => {
   const location = useLocation();
+  const { user } = useAuth();
 
   const navigation = [
     {
@@ -21,6 +23,15 @@ const DashboardSidebar = () => {
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+        </svg>
+      ),
+    },
+    {
+      name: 'Media Upload',
+      href: '/dashboard/upload',
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
         </svg>
       ),
     },
@@ -44,6 +55,21 @@ const DashboardSidebar = () => {
     },
   ];
 
+  // Add instructor-only navigation items
+  const instructorNavigation = user?.role === 'instructor' ? [
+    {
+      name: 'Create Course',
+      href: '/instructor/create-course',
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+        </svg>
+      ),
+    },
+  ] : [];
+
+  const allNavigation = [...navigation, ...instructorNavigation];
+
   return (
     <div className="hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0">
       <div className="flex flex-col flex-grow bg-gradient-to-b from-slate-800 to-slate-900 border-r border-purple-600 pt-20 pb-4 overflow-y-auto shadow-2xl">
@@ -51,7 +77,7 @@ const DashboardSidebar = () => {
           <h2 className="text-lg font-semibold text-white">Dashboard</h2>
         </div>
         <nav className="mt-8 flex-1 px-2 space-y-1">
-          {navigation.map((item) => {
+          {allNavigation.map((item) => {
             const isActive = location.pathname === item.href;
             return (
               <Link

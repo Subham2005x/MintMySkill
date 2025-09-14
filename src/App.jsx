@@ -18,6 +18,11 @@ import DashboardPage from './pages/DashboardPage';
 import DashboardCoursesPage from './pages/DashboardCoursesPage';
 import WalletPage from './pages/WalletPage';
 import RedeemPage from './pages/RedeemPage';
+import ProfilePage from './pages/ProfilePage';
+import CreateCoursePage from './pages/CreateCoursePage';
+import CreateQuizPage from './pages/CreateQuizPage';
+import QuizTakePage from './pages/QuizTakePage';
+import MediaUploadPage from './pages/MediaUploadPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 // Create a client
@@ -54,9 +59,28 @@ function App() {
               }>
                 <Route index element={<DashboardPage />} />
                 <Route path="courses" element={<DashboardCoursesPage />} />
+                <Route path="upload" element={<MediaUploadPage />} />
                 <Route path="wallet" element={<WalletPage />} />
                 <Route path="redeem" element={<RedeemPage />} />
+                <Route path="profile" element={<ProfilePage />} />
               </Route>
+              
+              {/* Protected Instructor Routes */}
+              <Route path="/instructor" element={
+                <ProtectedRoute requiredRole="instructor">
+                  <DashboardLayout />
+                </ProtectedRoute>
+              }>
+                <Route path="create-course" element={<CreateCoursePage />} />
+                <Route path="create-quiz" element={<CreateQuizPage />} />
+              </Route>
+              
+              {/* Quiz Taking Route (Protected) */}
+              <Route path="/quiz/:id" element={
+                <ProtectedRoute>
+                  <QuizTakePage />
+                </ProtectedRoute>
+              } />
               
               {/* Catch all route */}
               <Route path="*" element={<NotFoundPage />} />

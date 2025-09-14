@@ -7,22 +7,24 @@ import WalletConnect from '../components/WalletConnect';
 
 const WalletPage = () => {
   const { user } = useAuth();
-  const [connectedWallet, setConnectedWallet] = useState(mockUserData.walletAddress);
+  const [connectedWallet, setConnectedWallet] = useState(null); // Start with no wallet connected
 
   // Fetch wallet balance
   const { data: balanceData, isLoading: balanceLoading } = useQuery({
     queryKey: ['walletBalance', user?.id],
     queryFn: () => walletAPI.getBalance(user?.id),
-    initialData: { balance: mockUserData.tokenBalance },
+    // Remove initialData to show real backend data
     enabled: !!user?.id,
   });
 
   // Fetch transaction history
-  const { data: transactions = [], isLoading: transactionsLoading } = useQuery({
+  const { data: transactionsResponse = {}, isLoading: transactionsLoading } = useQuery({
     queryKey: ['transactions'],
     queryFn: walletAPI.getTransactions,
-    initialData: mockTransactions,
+    // Remove initialData to show real backend data
   });
+
+  const transactions = transactionsResponse.data || [];
 
   const handleWalletConnected = async (address) => {
     setConnectedWallet(address);
@@ -161,7 +163,7 @@ const WalletPage = () => {
               </div>
             ))}
           </div>
-        ) : transactions.length === 0 ? (
+        ) : !Array.isArray(transactions) || transactions.length === 0 ? (
           <div className="text-center py-8">
             <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />

@@ -23,25 +23,14 @@ const LoginPage = () => {
     setLoading(true);
 
     try {
-      // For development: mock successful login
       if (formData.email && formData.password) {
-        const mockUser = {
-          id: 1,
-          name: 'John Doe',
-          email: formData.email,
-        };
-        const mockToken = 'mock-jwt-token-12345';
-        
-        login(mockUser, mockToken);
+        // Real API call to backend
+        const response = await authAPI.login(formData.email, formData.password);
+        login(response.user, response.token);
         navigate(from, { replace: true });
       } else {
         setError('Please fill in all fields');
       }
-      
-      // Uncomment this when backend is ready:
-      // const response = await authAPI.login(formData.email, formData.password);
-      // login(response.user, response.token);
-      // navigate(from, { replace: true });
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed. Please try again.');
     } finally {

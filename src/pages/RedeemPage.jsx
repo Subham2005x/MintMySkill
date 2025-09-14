@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { redeemAPI } from '../services/api';
+import { redeemAPI, walletAPI } from '../services/api';
 import { mockRedeemItems, mockUserData } from '../data/mockData';
+import { useAuth } from '../context/AuthContext';
 import RedeemItemCard from '../components/RedeemItemCard';
 
 const RedeemPage = () => {
+  const { user } = useAuth();
   const [selectedCategory, setSelectedCategory] = useState('');
   const [sortBy, setSortBy] = useState('price_low');
 
@@ -12,11 +14,17 @@ const RedeemPage = () => {
   const { data: redeemItems = [], isLoading } = useQuery({
     queryKey: ['redeemItems'],
     queryFn: redeemAPI.getRedeemItems,
-    initialData: mockRedeemItems,
+    // Remove initialData to show real backend data
   });
 
-  // User's token balance
-  const userTokenBalance = mockUserData.tokenBalance;
+  // Fetch user's token balance from backend
+  const { data: balanceData } = useQuery({
+    queryKey: ['userBalance'],
+    queryFn: () => walletAPI.getBalance(user?.id),
+    enabled: !!user,
+  });
+
+  const userTokenBalance = balanceData?.balance || 0;
 
   const handleRedeem = async (itemId) => {
     try {
