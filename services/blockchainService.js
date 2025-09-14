@@ -1,60 +1,106 @@
 const { ethers } = require('ethers');
-const fs = require('fs');
 const path = require('path');
-
-// Contract ABIs (will be generated after compilation)
-const EDUTokenABI = require('../contracts/artifacts/EDUToken.sol/EDUToken.json').abi;
-const EDUCertificateABI = require('../contracts/artifacts/EDUCertificate.sol/EDUCertificate.json').abi;
+const fs = require('fs');
 
 class BlockchainService {
   constructor() {
     this.provider = null;
-    this.wallet = null;
-    this.eduToken = null;
-    this.eduCertificate = null;
+    this.signer = null;
+    this.eduTokenContract = null;
     this.initialized = false;
   }
 
-  /**
-   * Initialize blockchain connection
-   */
   async initialize() {
     try {
-      // Setup provider
-      const rpcUrl = process.env.BLOCKCHAIN_RPC_URL || 'http://localhost:8545';
-      this.provider = new ethers.providers.JsonRpcProvider(rpcUrl);
-
-      // Setup wallet
-      const privateKey = process.env.BLOCKCHAIN_PRIVATE_KEY;
-      if (!privateKey) {
-        throw new Error('BLOCKCHAIN_PRIVATE_KEY not set in environment variables');
-      }
-      this.wallet = new ethers.Wallet(privateKey, this.provider);
-
-      // Setup contracts
-      const eduTokenAddress = process.env.EDU_TOKEN_ADDRESS;
-      const eduCertificateAddress = process.env.EDU_CERTIFICATE_ADDRESS;
-
-      if (!eduTokenAddress || !eduCertificateAddress) {
-        throw new Error('Contract addresses not set in environment variables');
+      console.log('🔗 Initializing Avalanche C-Chain connection...');
+      
+      // Get network configuration
+      const network = process.env.BLOCKCHAIN_NETWORK || 'fuji';
+      const rpcUrl = network === 'avalanche' 
+        ? process.env.AVALANCHE_MAINNET_RPC_URL 
+        : process.env.AVALANCHE_RPC_URL;
+      
+      if (!rpcUrl) {
+        console.log('⚠️ No RPC URL configured, skipping blockchain initialization');
+        return false;
       }
 
-      this.eduToken = new ethers.Contract(eduTokenAddress, EDUTokenABI, this.wallet);
-      this.eduCertificate = new ethers.Contract(eduCertificateAddress, EDUCertificateABI, this.wallet);
+      // Initialize provider
+      this.provider = new ethers.JsonRpcProvider(rpcUrl);
+      
+      // Test connection
+      const blockNumber = await this.provider.getBlockNumber();
+      console.log(`✅ Connected to Avalanche ${network} network, block: ${blockNumber}`);
 
-      // Verify connection
-      await this.provider.getBlockNumber();
-      console.log('✅ Blockchain service initialized successfully');
-      console.log(`📍 Network: ${process.env.BLOCKCHAIN_NETWORK || 'localhost'}`);
-      console.log(`💰 Wallet: ${this.wallet.address}`);
-      console.log(`🪙 EDU Token: ${eduTokenAddress}`);
-      console.log(`🎓 Certificate: ${eduCertificateAddress}`);
+      // Initialize signer if private key is provided
+      if (process.env.PRIVATE_KEY) {
+        this.signer = new ethers.Wallet(process.env.PRIVATE_KEY, this.provider);
+        console.log(`💰 Wallet address: ${this.signer.address}`);
+        
+        // Check wallet balance
+        const balance = await this.provider.getBalance(this.signer.address);
+        console.log(`💳 Wallet balance: ${ethers.formatEther(balance)} AVAX`);
+      }
+
+      // Initialize contract if address is provided
+      if (process.env.TOKEN_CONTRACT_ADDRESS && process.env.TOKEN_CONTRACT_ADDRESS !== '0x_your_deployed_edutoken_contract_address') {
+        await this.initializeContract();
+      }
 
       this.initialized = true;
+      console.log('✅ Blockchain service initialized successfully');
       return true;
     } catch (error) {
-      console.error('❌ Failed to initialize blockchain service:', error.message);
+      console.error('❌ Blockchain initialization failed:', error.message);
       return false;
+    }
+  }
+
+  /**
+   * Initialize the EduToken contract
+   */
+  async initializeContract() {
+    try {
+      // Load contract ABI (you'll need to add this)
+      const contractABI = [
+        // ERC20 standard functions
+        "function balanceOf(address owner) view returns (uint256)",
+        "function transfer(address to, uint256 amount) returns (bool)",
+        "function approve(address spender, uint256 amount) returns (bool)",
+        "function allowance(address owner, address spender) view returns (uint256)",
+        "function totalSupply() view returns (uint256)",
+        "function name() view returns (string)",
+        "function symbol() view returns (string)",
+        "function decimals() view returns (uint8)",
+        
+        // Custom EduToken functions
+        "function rewardTokens(address to, uint256 amount, string reason) returns (bool)",
+        "function batchRewardTokens(address[] to, uint256[] amounts, string reason) returns (bool)",
+        "function burnTokens(uint256 amount) returns (bool)",
+        "function redeemTokens(uint256 amount, string option) returns (bool)",
+        
+        // Events
+        "event TokensRewarded(address indexed to, uint256 amount, string reason)",
+        "event TokensRedeemed(address indexed from, uint256 amount, string option)"
+      ];
+
+      this.eduTokenContract = new ethers.Contract(
+        process.env.TOKEN_CONTRACT_ADDRESS,
+        contractABI,
+        this.signer || this.provider
+      );
+
+      // Test contract connection
+      const name = await this.eduTokenContract.name();
+      const symbol = await this.eduTokenContract.symbol();
+      
+      console.log(`🪙 Contract initialized: ${name} (${symbol})`);
+      console.log(`📍 Contract address: ${process.env.TOKEN_CONTRACT_ADDRESS}`);
+      
+      return true;
+    } catch (error) {
+      console.error('❌ Contract initialization failed:', error.message);
+      throw error;
     }
   }
 
@@ -74,8 +120,8 @@ class BlockchainService {
         throw new Error('Blockchain service not initialized');
       }
 
-      const amountWei = ethers.utils.parseEther(amount.toString());
-      const tx = await this.eduToken.rewardTokens(userAddress, amountWei, reason);
+      const amountWei = ethers.parseEther(amount.toString());
+      const tx = await this.eduTokenContract.rewardTokens(userAddress, amountWei, reason);
       
       console.log(`🪙 Rewarding ${amount} EDU tokens to ${userAddress}`);
       console.log(`📝 Reason: ${reason}`);
@@ -108,10 +154,10 @@ class BlockchainService {
       }
 
       const addresses = rewards.map(r => r.address);
-      const amounts = rewards.map(r => ethers.utils.parseEther(r.amount.toString()));
+      const amounts = rewards.map(r => ethers.parseEther(r.amount.toString()));
       const reason = rewards[0]?.reason || 'Batch reward';
 
-      const tx = await this.eduToken.batchRewardTokens(addresses, amounts, reason);
+      const tx = await this.eduTokenContract.batchRewardTokens(addresses, amounts, reason);
       
       console.log(`🪙 Batch rewarding tokens to ${addresses.length} users`);
       console.log(`🔗 Transaction: ${tx.hash}`);
@@ -227,10 +273,10 @@ class BlockchainService {
         throw new Error('Blockchain service not initialized');
       }
 
-      const balance = await this.eduToken.balanceOf(userAddress);
+      const balance = await this.eduTokenContract.balanceOf(userAddress);
       return {
         success: true,
-        balance: ethers.utils.formatEther(balance),
+        balance: ethers.formatEther(balance),
         balanceWei: balance.toString()
       };
     } catch (error) {
@@ -318,7 +364,7 @@ class BlockchainService {
         network: network.name,
         chainId: network.chainId,
         blockNumber,
-        gasPrice: ethers.utils.formatUnits(gasPrice, 'gwei') + ' gwei'
+        gasPrice: ethers.formatUnits(gasPrice, 'gwei') + ' gwei'
       };
     } catch (error) {
       console.error('❌ Network info query failed:', error.message);
@@ -338,21 +384,21 @@ class BlockchainService {
         throw new Error('Blockchain service not initialized');
       }
 
-      const amountWei = ethers.utils.parseEther(amount.toString());
-      const gasEstimate = await this.eduToken.estimateGas.rewardTokens(
+      const amountWei = ethers.parseEther(amount.toString());
+      const gasEstimate = await this.eduTokenContract.estimateGas.rewardTokens(
         userAddress, 
         amountWei, 
         'Gas estimation'
       );
 
       const gasPrice = await this.provider.getGasPrice();
-      const estimatedCost = gasEstimate.mul(gasPrice);
+      const estimatedCost = gasEstimate * gasPrice;
 
       return {
         success: true,
         gasEstimate: gasEstimate.toString(),
-        gasPrice: ethers.utils.formatUnits(gasPrice, 'gwei') + ' gwei',
-        estimatedCost: ethers.utils.formatEther(estimatedCost) + ' ETH'
+        gasPrice: ethers.formatUnits(gasPrice, 'gwei') + ' gwei',
+        estimatedCost: ethers.formatEther(estimatedCost) + ' ETH'
       };
     } catch (error) {
       console.error('❌ Gas estimation failed:', error.message);

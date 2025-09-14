@@ -10,8 +10,8 @@ const {
   getNetworkInfo,
   autoRewardCompletion
 } = require('../controllers/blockchainController');
-const { authenticateToken } = require('../middleware/auth');
-const { checkRole } = require('../middleware/roleCheck');
+const { protect } = require('../middleware/auth');
+const { checkRole, isAdmin } = require('../middleware/roleCheck');
 
 const router = express.Router();
 
@@ -70,7 +70,7 @@ router.get('/network', getNetworkInfo);
 router.get('/certificate/verify/:tokenId', verifyCertificate);
 
 // Protected routes
-router.use(authenticateToken);
+router.use(protect);
 
 // @route   GET /api/blockchain/balance
 // @desc    Get user's token balance
@@ -93,7 +93,7 @@ router.post('/connect-wallet', connectWalletValidation, connectWallet);
 // @desc    Reward tokens to user (admin only)
 // @access  Private (Admin)
 router.post('/reward', 
-  checkRole(['admin']),
+  isAdmin,
   rewardTokensValidation,
   rewardTokens
 );
@@ -102,7 +102,7 @@ router.post('/reward',
 // @desc    Issue course completion certificate (admin only)
 // @access  Private (Admin)
 router.post('/certificate',
-  checkRole(['admin']),
+  isAdmin,
   issueCertificateValidation,
   issueCertificate
 );
@@ -111,7 +111,7 @@ router.post('/certificate',
 // @desc    Automatic token reward and certificate on course completion
 // @access  Private (System - called internally)
 router.post('/auto-reward',
-  checkRole(['admin']),
+  isAdmin,
   autoRewardCompletion
 );
 

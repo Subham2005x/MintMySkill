@@ -17,7 +17,7 @@ const register = async (req, res, next) => {
       });
     }
 
-    const { name, email, password } = req.body;
+    const { name, email, password, role } = req.body;
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -33,8 +33,12 @@ const register = async (req, res, next) => {
       name,
       email,
       password,
-      tokenBalance: 100, // Welcome bonus
-      totalTokensEarned: 100
+      role: role || 'student', // Default to student if no role provided
+      tokenBalance: {
+        total: 100,
+        earned: 100,
+        redeemed: 0
+      }
     });
 
     // Create welcome transaction
@@ -230,7 +234,11 @@ const registerValidation = [
     .isLength({ min: 6 })
     .withMessage('Password must be at least 6 characters long')
     .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
-    .withMessage('Password must contain at least one uppercase letter, one lowercase letter, and one number')
+    .withMessage('Password must contain at least one uppercase letter, one lowercase letter, and one number'),
+  body('role')
+    .optional()
+    .isIn(['student', 'instructor', 'admin'])
+    .withMessage('Role must be student, instructor, or admin')
 ];
 
 const loginValidation = [

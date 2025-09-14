@@ -34,8 +34,8 @@ router.post('/:id/complete', protect, completeCourse);
 router.post('/:id/reviews', protect, reviewValidation, addReview);
 
 // Instructor/Admin routes
-router.post('/', authorize('instructor', 'admin'), createCourseValidation, createCourse);
-router.put('/:id', authorize('instructor', 'admin'), createCourseValidation, updateCourse);
-router.delete('/:id', authorize('instructor', 'admin'), deleteCourse);
+router.post('/', protect, authorize('instructor', 'admin'), createCourseValidation, createCourse);
+router.put('/:id', protect, authorize('instructor', 'admin'), createCourseValidation, updateCourse);
+router.delete('/:id', protect, authorize('instructor', 'admin'), deleteCourse);
 
 module.exports = router;

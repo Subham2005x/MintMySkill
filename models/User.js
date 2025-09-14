@@ -36,20 +36,32 @@ const userSchema = new mongoose.Schema({
   
   // Token and Wallet Information
   tokenBalance: {
-    type: Number,
-    default: 0,
-    min: [0, 'Token balance cannot be negative']
-  },
-  totalTokensEarned: {
-    type: Number,
-    default: 0,
-    min: [0, 'Total tokens earned cannot be negative']
+    total: {
+      type: Number,
+      default: 0,
+      min: [0, 'Token balance cannot be negative']
+    },
+    earned: {
+      type: Number,
+      default: 0,
+      min: [0, 'Total tokens earned cannot be negative']
+    },
+    redeemed: {
+      type: Number,
+      default: 0,
+      min: [0, 'Total tokens redeemed cannot be negative']
+    }
   },
   walletAddress: {
     type: String,
     default: '',
     trim: true,
-    match: [/^0x[a-fA-F0-9]{40}$/, 'Invalid Ethereum address format']
+    validate: {
+      validator: function(v) {
+        return !v || /^0x[a-fA-F0-9]{40}$/.test(v);
+      },
+      message: 'Invalid Ethereum address format'
+    }
   },
   isWalletConnected: {
     type: Boolean,
@@ -114,8 +126,7 @@ const userSchema = new mongoose.Schema({
   }
 });
 
-// Indexes for better performance
-userSchema.index({ email: 1 });
+// Indexes for better performance (email already has unique index)
 userSchema.index({ walletAddress: 1 });
 userSchema.index({ tokenBalance: -1 });
 

@@ -111,7 +111,7 @@ transactionSchema.statics.createTransaction = async function(data) {
     throw new Error('User not found');
   }
   
-  const balanceBefore = user.tokenBalance;
+  const balanceBefore = user.tokenBalance.total || 0;
   let balanceAfter = balanceBefore;
   
   // Calculate balance after transaction
@@ -142,6 +142,15 @@ transactionSchema.statics.createTransaction = async function(data) {
   });
   
   await transaction.save();
+  
+  // Update user's token balance
+  await User.findByIdAndUpdate(userId, {
+    'tokenBalance.total': balanceAfter,
+    'tokenBalance.earned': type === 'earned' || type === 'bonus' || type === 'refund' 
+      ? user.tokenBalance.earned + Math.abs(amount)
+      : user.tokenBalance.earned
+  });
+  
   return transaction;
 };
 
@@ -158,7 +167,7 @@ transactionSchema.methods.markCompleted = async function(blockchainHash) {
   // Update user balance
   const User = mongoose.model('User');
   await User.findByIdAndUpdate(this.user, {
-    tokenBalance: this.balanceAfter
+    'tokenBalance.total': this.balanceAfter
   });
   
   await this.save();

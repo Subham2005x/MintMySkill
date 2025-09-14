@@ -12,14 +12,15 @@ const walletRoutes = require('./routes/wallet');
 const redeemRoutes = require('./routes/redeem');
 const checkoutRoutes = require('./routes/checkout');
 const uploadRoutes = require('./routes/upload');
-const quizRoutes = require('./routes/quiz');
 const blockchainRoutes = require('./routes/blockchain');
+const tokenRoutes = require('./routes/tokens');
+const enrollmentRoutes = require('./routes/enrollments');
 
 // Import middleware
 const { errorHandler, notFound } = require('./middleware/errorHandler');
 
 // Import blockchain service
-const blockchainService = require('./services/blockchainService');
+const blockchainService = require('./services/avalancheBlockchainService');
 
 const app = express();
 
@@ -67,8 +68,9 @@ app.use('/api/wallet', walletRoutes);
 app.use('/api/redeem', redeemRoutes);
 app.use('/api/checkout', checkoutRoutes);
 app.use('/api/upload', uploadRoutes);
-app.use('/api/quiz', quizRoutes);
 app.use('/api/blockchain', blockchainRoutes);
+app.use('/api/tokens', tokenRoutes);
+app.use('/api/enrollments', enrollmentRoutes);
 
 // API documentation endpoint
 app.get('/api', (req, res) => {
@@ -82,7 +84,7 @@ app.get('/api', (req, res) => {
       redeem: '/api/redeem',
       checkout: '/api/checkout',
       upload: '/api/upload',
-      quiz: '/api/quiz'
+      blockchain: '/api/blockchain'
     }
   });
 });
@@ -94,20 +96,17 @@ app.use(errorHandler);
 // Database Connection
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    const conn = await mongoose.connect(process.env.MONGODB_URI);
     console.log(`MongoDB Connected: ${conn.connection.host}`);
     
-    // Initialize blockchain service
-    console.log('🔗 Initializing blockchain service...');
-    const blockchainInitialized = await blockchainService.initialize();
-    if (blockchainInitialized) {
-      console.log('✅ Blockchain service initialized');
-    } else {
-      console.log('⚠️ Blockchain service failed to initialize');
-    }
+    // Initialize blockchain service (temporarily disabled for debugging)
+    console.log('🔗 Skipping blockchain service initialization for debugging...');
+    // const blockchainInitialized = await blockchainService.initialize();
+    // if (blockchainInitialized) {
+    //   console.log('✅ Blockchain service initialized');
+    // } else {
+    //   console.log('⚠️ Blockchain service failed to initialize');
+    // }
   } catch (error) {
     console.error('Database connection error:', error);
     process.exit(1);
@@ -116,11 +115,12 @@ const connectDB = async () => {
 
 // Start Server
 const PORT = process.env.PORT || 3000;
+let server; // Define server variable
 
 const startServer = async () => {
   await connectDB();
   
-  app.listen(PORT, () => {
+  server = app.listen(PORT, () => {
     console.log(`
 🚀 Server running in ${process.env.NODE_ENV} mode on port ${PORT}
 🔗 API Base URL: http://localhost:${PORT}/api
@@ -133,9 +133,13 @@ const startServer = async () => {
 process.on('unhandledRejection', (err, promise) => {
   console.log('Unhandled Rejection at:', promise, 'reason:', err);
   // Close server & exit process
-  server.close(() => {
+  if (server) {
+    server.close(() => {
+      process.exit(1);
+    });
+  } else {
     process.exit(1);
-  });
+  }
 });
 
 startServer();
