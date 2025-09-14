@@ -53,15 +53,47 @@ const WalletConnect = ({ onWalletConnected, connectedAddress }) => {
             onWalletConnected(null);
           }
         });
-
-        // Listen for chain changes
-        window.ethereum.on('chainChanged', () => {
-          window.location.reload();
-        });
       }
     } catch (error) {
+      if (error.code === 4001) {
+        setError('Please connect to MetaMask.');
+      } else {
+        setError('An error occurred while connecting to MetaMask.');
+      }
       console.error('Error connecting wallet:', error);
-      setError('Failed to connect wallet. Please try again.');
+    } finally {
+      setConnecting(false);
+    }
+  };
+
+  const switchAccount = async () => {
+    if (typeof window.ethereum === 'undefined') {
+      setError('MetaMask is not installed.');
+      return;
+    }
+
+    setConnecting(true);
+    setError('');
+
+    try {
+      // Request to switch account in MetaMask
+      await window.ethereum.request({
+        method: 'wallet_requestPermissions',
+        params: [{ eth_accounts: {} }],
+      });
+      
+      // Get the new selected account
+      const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+      if (accounts.length > 0) {
+        onWalletConnected(accounts[0]);
+      }
+    } catch (error) {
+      if (error.code === 4001) {
+        setError('Please select an account in MetaMask.');
+      } else {
+        setError('An error occurred while switching accounts.');
+      }
+      console.error('Error switching account:', error);
     } finally {
       setConnecting(false);
     }

@@ -31,9 +31,14 @@ const Navbar = () => {
                 Courses
               </Link>
               {user && (
-                <Link to="/dashboard" className="text-slate-200 hover:text-purple-300 px-3 py-2 rounded-md text-sm font-medium">
-                  Dashboard
-                </Link>
+                <>
+                  <Link to="/dashboard" className="text-slate-200 hover:text-purple-300 px-3 py-2 rounded-md text-sm font-medium">
+                    Dashboard
+                  </Link>
+                  <Link to="/tokens" className="text-slate-200 hover:text-purple-300 px-3 py-2 rounded-md text-sm font-medium">
+                    Tokens
+                  </Link>
+                </>
               )}
             </div>
           </div>

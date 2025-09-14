@@ -23,6 +23,8 @@ import CreateCoursePage from './pages/CreateCoursePage';
 import CreateQuizPage from './pages/CreateQuizPage';
 import QuizTakePage from './pages/QuizTakePage';
 import MediaUploadPage from './pages/MediaUploadPage';
+import TeacherDashboard from './pages/TeacherDashboard';
+import TokenDashboard from './pages/TokenDashboard';
 import NotFoundPage from './pages/NotFoundPage';
 
 // Create a client
@@ -63,7 +65,36 @@ function App() {
                 <Route path="wallet" element={<WalletPage />} />
                 <Route path="redeem" element={<RedeemPage />} />
                 <Route path="profile" element={<ProfilePage />} />
+                <Route path="tokens" element={<TokenDashboard />} />
               </Route>
+              
+              {/* Token Dashboard (Standalone) */}
+              <Route path="/tokens" element={
+                <ProtectedRoute>
+                  <TokenDashboard />
+                </ProtectedRoute>
+              } />
+              
+              {/* Teacher Dashboard */}
+              <Route path="/teacher-dashboard" element={
+                <ProtectedRoute requiredRole="instructor">
+                  <TeacherDashboard />
+                </ProtectedRoute>
+              } />
+              
+              {/* Create Course Page for Teachers */}
+              <Route path="/create-course" element={
+                <ProtectedRoute requiredRole="instructor">
+                  <CreateCoursePage />
+                </ProtectedRoute>
+              } />
+              
+              {/* Media Upload Page for Teachers */}
+              <Route path="/media-upload" element={
+                <ProtectedRoute requiredRole="instructor">
+                  <MediaUploadPage />
+                </ProtectedRoute>
+              } />
               
               {/* Protected Instructor Routes */}
               <Route path="/instructor" element={

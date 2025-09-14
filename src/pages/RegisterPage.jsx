@@ -58,7 +58,7 @@ const RegisterPage = () => {
         login(response.user, response.token);
         
         // Redirect based on role
-        const redirectPath = formData.role === 'author' ? '/dashboard/courses' : '/dashboard';
+        const redirectPath = formData.role === 'instructor' ? '/teacher-dashboard' : '/dashboard';
         navigate(redirectPath);
       } else {
         setError('Please fill in all fields');
@@ -132,9 +132,9 @@ const RegisterPage = () => {
               
               <button
                 type="button"
-                onClick={() => setFormData({ ...formData, role: 'author' })}
+                onClick={() => setFormData({ ...formData, role: 'instructor' })}
                 className={`p-4 rounded-lg border-2 transition-all duration-200 ${
-                  formData.role === 'author'
+                  formData.role === 'instructor'
                     ? 'border-purple-500 bg-purple-500/10 text-purple-300'
                     : 'border-slate-600 hover:border-purple-400 text-slate-300'
                 }`}
@@ -143,7 +143,7 @@ const RegisterPage = () => {
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                   </svg>
-                  <span>Register as Author</span>
+                  <span>Register as Instructor</span>
                 </div>
               </button>
             </div>

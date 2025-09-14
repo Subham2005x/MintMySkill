@@ -15,8 +15,10 @@ const DashboardCoursesPage = () => {
     queryFn: coursesAPI.getEnrolledCourses,
     initialData: { data: mockEnrolledCourses },
     enabled: !!user, // Only run query if user is authenticated
+    retry: 1, // Retry once on failure
   });
 
+  // Use backend data if available, fallback to mock data
   const enrolledCourses = enrolledCoursesResponse.data || mockEnrolledCourses;
 
   const handleMarkCompleted = async (courseId) => {
@@ -50,9 +52,13 @@ const DashboardCoursesPage = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-600"></div>
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600"></div>
       </div>
     );
+  }
+
+  if (error) {
+    // Silently use mock data when backend is unavailable
   }
 
   return (
@@ -82,7 +88,7 @@ const DashboardCoursesPage = () => {
       </div>
 
       {/* Filter Tabs */}
-      <div className="border-b border-gray-200">
+      <div className="border-b border-slate-600">
         <nav className="-mb-px flex space-x-8">
           {[
             { key: 'all', label: 'All Courses', count: stats.total },
@@ -94,13 +100,13 @@ const DashboardCoursesPage = () => {
               onClick={() => setFilter(tab.key)}
               className={`${
                 filter === tab.key
-                  ? 'border-primary-500 text-primary-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  ? 'border-purple-500 text-purple-400'
+                  : 'border-transparent text-slate-400 hover:text-slate-200 hover:border-slate-500'
               } whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm transition-colors duration-200`}
             >
               {tab.label}
               <span className={`${
-                filter === tab.key ? 'bg-primary-100 text-primary-600' : 'bg-gray-100 text-gray-900'
+                filter === tab.key ? 'bg-purple-900/50 text-purple-300' : 'bg-slate-700 text-slate-300'
               } ml-2 py-0.5 px-2.5 rounded-full text-xs font-medium`}>
                 {tab.count}
               </span>
@@ -112,13 +118,13 @@ const DashboardCoursesPage = () => {
       {/* Courses Grid */}
       {filteredCourses.length === 0 ? (
         <div className="text-center py-12">
-          <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="mx-auto h-12 w-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
           </svg>
-          <h3 className="mt-2 text-sm font-medium text-gray-900">
+          <h3 className="mt-2 text-sm font-medium text-white">
             No {filter === 'all' ? '' : filter} courses found
           </h3>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-slate-400">
             {filter === 'all' 
               ? "You haven't enrolled in any courses yet." 
               : `You don't have any ${filter} courses.`}

@@ -7,7 +7,7 @@ const LoginPage = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    role: 'student' // Default role
+    role: 'student' // Default role selection
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -26,11 +26,11 @@ const LoginPage = () => {
     try {
       if (formData.email && formData.password) {
         // Real API call to backend
-        const response = await authAPI.login(formData.email, formData.password, formData.role);
+        const response = await authAPI.login(formData.email, formData.password);
         login(response.user, response.token);
         
-        // Redirect based on role
-        const redirectPath = formData.role === 'author' ? '/dashboard/courses' : from;
+        // Redirect based on user role from backend response
+        const redirectPath = response.user.role === 'instructor' ? '/teacher-dashboard' : '/dashboard';
         navigate(redirectPath, { replace: true });
       } else {
         setError('Please fill in all fields');
@@ -76,40 +76,47 @@ const LoginPage = () => {
           
           <div className="space-y-4">
             {/* Role Selection */}
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <button
-                type="button"
-                onClick={() => setFormData({ ...formData, role: 'student' })}
-                className={`p-4 rounded-lg border-2 transition-all duration-200 ${
-                  formData.role === 'student'
-                    ? 'border-purple-500 bg-purple-500/10 text-purple-300'
-                    : 'border-slate-600 hover:border-purple-400 text-slate-300'
-                }`}
-              >
-                <div className="flex flex-col items-center space-y-2">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                  </svg>
-                  <span>Student</span>
-                </div>
-              </button>
-              
-              <button
-                type="button"
-                onClick={() => setFormData({ ...formData, role: 'author' })}
-                className={`p-4 rounded-lg border-2 transition-all duration-200 ${
-                  formData.role === 'author'
-                    ? 'border-purple-500 bg-purple-500/10 text-purple-300'
-                    : 'border-slate-600 hover:border-purple-400 text-slate-300'
-                }`}
-              >
-                <div className="flex flex-col items-center space-y-2">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                  </svg>
-                  <span>Author</span>
-                </div>
-              </button>
+            <div>
+              <label className="block text-sm font-medium text-slate-200 mb-3">
+                Login as
+              </label>
+              <div className="grid grid-cols-2 gap-4">
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, role: 'student' })}
+                  className={`p-4 rounded-lg border-2 transition-all duration-200 ${
+                    formData.role === 'student'
+                      ? 'border-purple-500 bg-purple-500/20 text-purple-300'
+                      : 'border-slate-600 hover:border-purple-400 text-slate-300'
+                  }`}
+                >
+                  <div className="flex flex-col items-center space-y-2">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                    <span className="font-medium">Student</span>
+                    <span className="text-xs text-center">Learn & Earn Tokens</span>
+                  </div>
+                </button>
+                
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, role: 'instructor' })}
+                  className={`p-4 rounded-lg border-2 transition-all duration-200 ${
+                    formData.role === 'instructor'
+                      ? 'border-purple-500 bg-purple-500/20 text-purple-300'
+                      : 'border-slate-600 hover:border-purple-400 text-slate-300'
+                  }`}
+                >
+                  <div className="flex flex-col items-center space-y-2">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                    <span className="font-medium">Teacher</span>
+                    <span className="text-xs text-center">Create & Upload Content</span>
+                  </div>
+                </button>
+              </div>
             </div>
 
             <div>

@@ -40,32 +40,14 @@ api.interceptors.response.use(
 
 // Authentication APIs
 export const authAPI = {
-  login: async (email, password, role) => {
-    const response = await api.post('/auth/login', { email, password, role });
-    // For development/mock data
-    return {
-      user: {
-        id: 1,
-        email,
-        name: email.split('@')[0],
-        role: role,
-        tokenBalance: role === 'student' ? 0 : null
-      },
-      token: 'mock-jwt-token'
-    };
+  login: async (email, password) => {
+    const response = await api.post('/auth/login', { email, password });
+    return response.data;
   },
   
   register: async (userData) => {
     const response = await api.post('/auth/register', userData);
-    // For development/mock data
-    return {
-      user: {
-        id: Math.floor(Math.random() * 1000),
-        ...userData,
-        tokenBalance: userData.role === 'student' ? 0 : null
-      },
-      token: 'mock-jwt-token'
-    };
+    return response.data;
   },
   
   getProfile: async () => {
@@ -274,6 +256,102 @@ export const checkoutAPI = {
     const response = await api.post('/checkout/create-session', { courseId });
     return response.data;
   },
+};
+
+// Token APIs
+export const tokensAPI = {
+  getBalance: async () => {
+    const response = await api.get('/tokens/balance');
+    return response.data;
+  },
+
+  getRedemptionOptions: async () => {
+    const response = await api.get('/tokens/redemption-options');
+    return response.data;
+  },
+
+  redeemTokens: async (redemptionData) => {
+    const response = await api.post('/tokens/redeem', redemptionData);
+    return response.data;
+  },
+
+  getTransactions: async (params = {}) => {
+    const response = await api.get('/tokens/transactions', { params });
+    return response.data;
+  },
+
+  updateWallet: async (walletData) => {
+    const response = await api.put('/tokens/wallet', walletData);
+    return response.data;
+  },
+
+  getNetworkInfo: async () => {
+    const response = await api.get('/tokens/network-info');
+    return response.data;
+  },
+
+  rewardStudent: async (rewardData) => {
+    const response = await api.post('/tokens/reward', rewardData);
+    return response.data;
+  },
+
+  setCourseReward: async (courseId, rewardAmount) => {
+    const response = await api.put(`/tokens/course-reward/${courseId}`, { rewardAmount });
+    return response.data;
+  },
+};
+
+// Enrollment APIs
+export const enrollmentAPI = {
+  getUserEnrollments: async (status) => {
+    const params = status ? { status } : {};
+    const response = await api.get('/enrollments', { params });
+    return response.data;
+  },
+
+  enrollInCourse: async (courseId) => {
+    const response = await api.post(`/enrollments/${courseId}`);
+    return response.data;
+  },
+
+  getEnrollment: async (courseId) => {
+    const response = await api.get(`/enrollments/${courseId}`);
+    return response.data;
+  },
+
+  getCourseProgress: async (courseId) => {
+    const response = await api.get(`/enrollments/${courseId}/progress`);
+    return response.data;
+  },
+
+  completeLesson: async (courseId, lessonId, timeSpent = 0) => {
+    const response = await api.post(`/enrollments/${courseId}/lessons/${lessonId}/complete`, {
+      timeSpent
+    });
+    return response.data;
+  },
+
+  addLessonNote: async (courseId, lessonId, content, timestamp = 0) => {
+    const response = await api.post(`/enrollments/${courseId}/lessons/${lessonId}/notes`, {
+      content,
+      timestamp
+    });
+    return response.data;
+  },
+};
+
+// Add courseAPI as an alias to coursesAPI for compatibility
+export const courseAPI = {
+  getCourseById: async (id) => {
+    const response = await api.get(`/courses/${id}`);
+    return response.data;
+  },
+  
+  // Include other course methods as needed
+  getCourses: coursesAPI.getCourses,
+  createCourse: coursesAPI.createCourse,
+  updateCourse: coursesAPI.updateCourse,
+  deleteCourse: coursesAPI.deleteCourse,
 };
 
 export default api;

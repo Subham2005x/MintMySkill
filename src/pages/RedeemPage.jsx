@@ -14,7 +14,7 @@ const RedeemPage = () => {
   const { data: redeemItems = [], isLoading } = useQuery({
     queryKey: ['redeemItems'],
     queryFn: redeemAPI.getRedeemItems,
-    // Remove initialData to show real backend data
+    initialData: mockRedeemItems, // Use mock data when backend is not available
   });
 
   // Fetch user's token balance from backend
@@ -124,24 +124,6 @@ const RedeemPage = () => {
         <div className="text-sm text-gray-600">
           {filteredAndSortedItems.length} item{filteredAndSortedItems.length !== 1 ? 's' : ''} available
         </div>
-      </div>
-
-      {/* Quick Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {categories.map(category => {
-          const categoryItems = redeemItems.filter(item => item.category === category);
-          const affordableItems = categoryItems.filter(item => item.tokenCost <= userTokenBalance);
-          
-          return (
-            <div key={category} className="card text-center">
-              <div className="text-lg font-semibold text-gray-900">{categoryItems.length}</div>
-              <div className="text-sm text-gray-600">{category}</div>
-              <div className="text-xs text-green-600">
-                {affordableItems.length} affordable
-              </div>
-            </div>
-          );
-        })}
       </div>
 
       {/* Redeem Items Grid */}
